@@ -1,0 +1,332 @@
+<style>
+	div.sub-func-view{
+		display:none;
+		margin-left: 36px;
+	    border: 1px solid #ddd;
+	    padding: 5px 5px 0 5px;
+	    white-space:normal
+	}
+	div.sub-func-view label{
+		margin-right:8px;
+		margin-bottom:5px;
+	    cursor: pointer;
+	}
+	div.sub-func-view input[type="checkbox"]{
+		margin:0 5px 0 0
+	}
+	.ztree * {
+		font-family: inherit;
+	}
+</style>
+
+<link rel="stylesheet" href="/css/zTree/zTreeStyle/zTreeStyle.css">
+<div class="gui-block gui-bg-white">
+	<div class="pull-right">
+		<input class="g-btn g-btn-m52b17e" data-toggle="modal" id="roleAddBtn"   data-target="#roleDetailModal" type="button" value="添加">
+	</div>
+	<div class="g-table-wraper">
+		<table id="table" class="auto-table" data-url="/preferences/e/role/ajax/list.ajax">
+			<thead>
+				<tr>
+					<th data-field="roleCode">角色编码</th>
+					<th data-field="roleName">角色名称</th>
+					<th data-field="groupName">分类</th>
+					<th data-field="userNum">成员数</th>
+					<th data-field="menuNum">菜单数</th>
+					<th data-formatter="actionFormatter" data-events="actionEvents">操作</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</div>
+
+<!-- 添加/修改角色-->
+<div class="modal fade" id="roleDetailModal" tabindex="-1" role="dialog"
+	data-backdrop="static" aria-hidden="true">
+	<div class="modal-dialog " role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" ></h4>
+			</div>
+			<form  class="form-horizontal h-form auto-validate" action="/preferences/e/role/ajax/save.ajax">
+				<input name="id"  type="hidden"  >
+				<div class="modal-body contents clearfix">
+					<div class="form-group ">
+						<label class="control-label col-md-3 require">角色编码：</label>
+						<div class="col-md-8">
+							<input name="roleCode" id="roleCode" class="form-control"  data-fv-notempty >
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-md-3 require">角色名称：</label>
+						<div class="col-md-8">
+							<input name="roleName" class="form-control" data-fv-notempty >
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-md-3 require">角色分类：</label>
+						<div class="col-md-8">
+							<input name="groupName" class="form-control" data-fv-notempty >
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-md-3">角色描述：</label>
+						<div class="col-md-8">
+							<textarea name="note" class="form-control" rows="4" ></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input class="g-btn g-btn-m5d78af" type="submit" value="保存">
+					<input class="g-btn g-btn-mdadada" data-dismiss="modal"
+						type="button" value="取消">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="roleMenuModal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+	<div class="modal-dialog " role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" >菜单权限分配</h4>
+			</div>
+			
+			<div class="modal-body contents clearfix">
+				  <ul id="menuTabs" class="nav nav-tabs" role="tablist">
+				  </ul>
+				  <div id="menuTabContents" class="tab-content" 
+					  			style="height:400px;
+					  				overflow: auto;    
+					  				padding: 5px;
+								    border: 1px solid #ddd;
+								    border-radius: 0 0 4px 4px;
+								    border-top-width: 0;
+							        background-color: #f8faff;">
+				  </div>
+			</div>
+			<div class="modal-footer">
+				<form  class="form-horizontal auto-validate" action="/preferences/e/role/ajax/saveMenus.ajax">
+					<input name="roleCode"  type="hidden"  >
+					<input name="menus"  type="hidden"  >
+					<input class="g-btn g-btn-m5d78af" type="submit" value="保存">
+					<input class="g-btn g-btn-mdadada" data-dismiss="modal"
+						type="button" value="取消">
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="/js/frame/zTree/jquery.ztree.all-3.5.min.js"></script>
+<script src="/js/frame/zTree/jquery.ztree.core-3.5.js"></script>
+<script src="/js/frame/zTree/jquery.ztree.excheck-3.5.js"></script>
+<script src="/js/frame/zTree/jquery.ztree.exedit-3.5.js"></script>
+<script>
+function actionFormatter(value, row, index) {
+	return [
+	    '<a href="#" data-toggle="modal" data-target="#roleDetailModal" class="roleDetailBtn g-btn g-btn-m5d78af" >详情</a>',
+        '<a href="#" data-toggle="modal" data-target="#roleMenuModal" class="roleMenuBtn g-btn g-btn-m5d78af" >分配菜单</a>',
+        '<a href="#"  class="roleDelBtn g-btn g-btn-m5d78af" >删除</a>' 
+    ].join('');
+}
+function visitChildren(children){
+	var chr = [];
+	if(children && $.isArray(children)){
+		$.each(children,function(i,obj){
+			var item = {
+				id : obj.menu.id,
+				name : obj.menu.name,
+				subFuncs: obj.menu.subFuncs,
+				dir : obj.menu.dir
+			};
+			item.children =  visitChildren(obj.children);
+			chr.push(item);
+		});
+	}
+	return chr;
+}
+
+function addMenuSubFuncs(treeId, treeNode) {
+	var aObj = $("#" + treeNode.tId );
+	var subFuncs = treeNode.subFuncs;
+	if(subFuncs && $.isPlainObject(subFuncs)){
+		var subFuncsView = $('<div class="sub-func-view"></div>');
+		$.each(subFuncs,function(code,name){
+			subFuncsView.append('<label class="sub-func-label"><input name="sub-func" type="checkbox" value="'+code+'">'+name+'</input> </label>');
+		});
+		aObj.after(subFuncsView);
+		treeNode.subFuncsView=subFuncsView;
+	}
+};
+
+function menuNodeOnCheck(event,treeId,treeNode){
+	var subFuncsView = treeNode.subFuncsView;
+	if(subFuncsView){
+		subFuncsView.toggle(treeNode.checked);
+	}
+}
+
+$(function() { 
+	var moduleDetailModal = $("#moduleDetailModal");
+	var table=$("#table");
+	var roleDetailModal = $('#roleDetailModal');
+
+	$("#roleAddBtn").on("click",function(){
+		roleDetailModal.find('.modal-title').text('新增角色');
+		roleDetailModal.find('#roleCode').prop("readonly",false);
+		roleDetailModal.find('form input[name=id]').val('');
+	})
+	roleDetailModal.find("form").on("form.ajax.success",function(){
+		table.bootstrapTable("refresh");
+		roleDetailModal.modal("hide");
+	});
+	var menuTabs = $("#menuTabs");
+	var menuTabContents = $("#menuTabContents");
+	$.getJSON("/preferences/e/role/ajax/menuTree.ajax",function(res){
+		if(res.status==200){
+			$.each(res.data,function(i,item){
+				var tab = $('<li role="presentation"><a id="tab-head-'+item.code+'" href="#'+item.code+'"  role="tab" data-toggle="tab">'+item.name+'<span class="menus-count">(0)<span></a></li>');
+				menuTabs.append(tab);
+				var content = $(' <div role="tabpanel" class="tab-pane" id="'+item.code+'"><ul id="menuTree-'+item.code+'" class="ztree"></ul></div>');
+				menuTabContents.append(content);
+				if(i==0){
+					tab.addClass("active");
+					content.addClass("active");
+				}
+				var ztree = visitChildren(item.tree.children);
+				var treeObj = $.fn.zTree.init(content.children("ul"), {
+					treeId :'menuTree-'+ item.code,
+					check : {
+						enable : true,
+						autoCheckTrigger : true,
+						chkboxType : {
+							"Y" : "ps",
+							"N" : "ps"
+						}
+					},
+					view : {
+						dblClickExpand : false,
+						addDiyDom: addMenuSubFuncs
+					},
+					callback: {
+						onCheck: menuNodeOnCheck
+					}
+				}, ztree);
+				treeObj.expandAll(true);
+				content.data("tree",treeObj);
+			});
+		}
+	});
+	
+	
+	var roleMenuModal = $('#roleMenuModal');
+	roleMenuModal.on('hidden.bs.modal',function(e){
+		roleMenuModal.find("div.tab-pane").each(function(i,ele){
+			var content = $(ele);
+			var treeObj = content.data("tree");
+			treeObj.checkAllNodes(false);
+			treeObj.expandAll(true);
+			content.find('.sub-func-view input[type=checkbox]').prop("checked",false);
+			content.find('.sub-func-view').hide();
+		});
+		roleMenuModal.find("span.menus-count").text("(0)");
+	});
+	
+	window.actionEvents = {
+			'click .roleDetailBtn':function(e,value,row,index){
+				roleDetailModal.find('.modal-title').text('编辑角色');
+				roleDetailModal.find('form').fillData(row);
+				roleDetailModal.find('#roleCode').prop("readonly",true);
+			},
+			'click .roleMenuBtn':function(e,value,row,index){
+				roleMenuModal.find("input[name='roleCode']").val(row.roleCode);
+				$.getJSON("/preferences/e/role/ajax/getRoleMenus.ajax?roleCode="+row.roleCode,function(res){
+					if(res.status==200){
+						$.each(res.data,function(code,menus){
+							var content = $('#'+code);
+							var treeObj = content.data("tree");
+							var count = 0;
+							$.each(menus,function(i,menu){
+								var nodes = treeObj.getNodesByParam("id", menu.menuCode, null);
+								if(nodes.length>0){
+									var node = nodes[0];
+									treeObj.checkNode(node, true, true);
+									if(node.subFuncsView){
+										node.subFuncsView.show();
+										var nodeSubFuncs = menu.subFuncs;
+										if(nodeSubFuncs){
+											var funcs = nodeSubFuncs.split(',');
+											$.each(funcs,function(i,func){
+												node.subFuncsView.find('input[type="checkbox"][value="'+func+'"]').prop('checked',true);
+											});
+										}
+									}
+									count++;
+								}
+							});
+							$('#tab-head-'+code+" span").text("("+count+")");
+						});
+					}
+				});
+			},
+			'click .roleDelBtn':function(e,value,row,index){
+				$.messager.confirm("确认","确定要删除角色["+row.roleName+"]吗？",function(){
+					$.get('/preferences/e/role/ajax/delRole.ajax?id='+row.id,function(res){
+		    			if(res.status == 200){
+							$.messager.poput("删除成功");
+							$("#table").bootstrapTable("refresh");
+		    			}else{
+							alert(res.message);
+						}
+		    		},"json");
+				});
+			}
+	}
+	
+	roleMenuModal.find('form').on('form.ajax.presend',function(){
+		var menus = [];
+		roleMenuModal.find("div.tab-pane").each(function(i,ele){
+			var content = $(ele);
+			var module = content.attr("id");
+			var treeObj = content.data("tree");
+			var nodes = treeObj.getCheckedNodes(true);
+			$.each(nodes,function(i,node){
+				if(!node.dir){
+					var menu = {moduleCode:module,menuCode:node.id};
+					if(node.subFuncsView){
+						var subfuncs = [];
+						node.subFuncsView.find("input[type=checkbox]:checked").each(function(){
+							subfuncs.push($(this).val());
+						});
+						if(subfuncs && subfuncs.length>0){
+							menu.subFuncs=subfuncs.join(",");
+						}
+					}
+					menus.push(menu);
+				}
+			});
+		});
+		var menusStr = JSON.stringify(menus);
+		$(this).find("input[name='menus']").val(menusStr);
+ 	}).on('form.ajax.success',function(e,result,formData,modal){
+ 		roleMenuModal.modal('hide');
+ 		table.bootstrapTable("refresh");
+ 	});
+	
+	
+});
+
+</script>
+
+
+
+

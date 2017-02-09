@@ -1,0 +1,409 @@
+<@page name="菜单编辑-${module}" />
+<link rel="stylesheet" type="text/css" href="/css/jquery.nestable.css" />
+<script src="/js/jquery.nestable.js" ></script> 	
+<div class="gui-block gui-bg-white">
+	<div  class="dd" style="max-width: 700px;">
+		<div class="">
+			 <#if editable >
+			 	<input class="g-btn g-btn-m52b17e menu_dir_add" data-toggle="modal"
+					data-target="#menuDirModal" type="button" value="+ 添加一级菜单">
+			 	<div class="pull-right">
+			 	  <form id="saveForm" class="auto-validate" action="/preferences/e/module/menus/ajax/save.ajax" method="post">
+						<input type="hidden" name="module" value="${module}"/>
+						<input type="hidden" name="menuTree" id="menuTree"/>
+						<input class="g-btn g-btn-m5d78af"  type="submit" value="保存"  />
+						<a class="g-btn g-btn-mdadada"  href="/preferences/e/module/menus?module=${module}" >取消</a>
+			 	  </form>
+				</div>
+			 <#else>
+			 	 <a class="g-btn g-btn-m5d78af"  href="/preferences/e/module/menus?module=${module}&edit=1" >编辑</a>
+			 </#if>
+		</div>
+	    <ol class="dd-list ">
+	     	<#if root?? >
+		    	<#list root.children  as menuNode>
+		    		 	<li class="dd-item dd2-item dirMenu " 
+		    			data-id="${menuNode.menu.id}"
+		    			data-name="${menuNode.menu.name}"
+		    			data-dir="true"
+		    			data-icon="${menuNode.menu.icon!}"
+		    			>
+		            	 <ol class="dd-list">
+							 <#list menuNode.children  as subNode>
+							 	<li class="dd-item dd2-item subMenu"
+							 		data-id="${subNode.menu.id}"
+					    			data-name="${subNode.menu.name}"
+					    			data-url="${subNode.menu.url}"
+					    			data-dir="false"
+					    			data-sub-funcs="${subNode.menu.subFuncsStr!}">
+						         </li>
+							</#list>
+						</ol>
+			        </li>
+				</#list>
+			</#if>
+	    </ol>
+	</div>
+</div>
+
+
+
+<div class="modal fade" id="menuDirModal" tabindex="-1" role="dialog"
+	data-backdrop="static" aria-hidden="true">
+	<div class="modal-dialog " role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" >编辑目录</h4>
+			</div>
+			<form  class="form-horizontal h-form auto-validate">
+				<div class="modal-body contents clearfix">
+					<div class="form-group">
+						<label class="control-label col-md-3">目录名称：</label>
+						<div class="col-md-8">
+							<input name="name" class="form-control" data-fv-notempty >
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-md-3">图标样式：</label>
+						<div class="col-md-8">
+							<input name="icon" class="form-control">
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input class="g-btn g-btn-m5d78af" type="submit" value="确定">
+					<input class="g-btn g-btn-mdadada" data-dismiss="modal"
+						type="button" value="取消">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="menuDetailModal" tabindex="-1" role="dialog"
+	data-backdrop="static" aria-hidden="true">
+	<div class="modal-dialog " role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" >编辑菜单</h4>
+			</div>
+			<form  class="form-horizontal h-form auto-validate">
+				<div class="modal-body contents clearfix">
+					<div class="form-group ">
+						<label class="control-label col-md-3">菜单ID：</label>
+						<div class="col-md-8">
+							<input id="menuIdInput" name="id" class="form-control"  data-fv-notempty 
+								data-fv-callback
+								data-fv-callback-callback="checkMenuIdDup" >
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-md-3">菜单名称：</label>
+						<div class="col-md-8">
+							<input name="name" class="form-control" data-fv-notempty >
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-md-3">菜单URL：</label>
+						<div class="col-md-8">
+							<input name="url" class="form-control" data-fv-notempty >
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-md-3">子权限：</label>
+						<div class="col-md-8">
+							<textarea name="subFuncs" class="form-control" rows="4" placeholder="权限代码:权限名称,权限代码:权限名称..."
+								pattern="^[^:,']+:[^:,']+(,[^:,']+:[^:,']+)*$" data-fv-regexp-message="请输入符合格式的字符串"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input class="g-btn g-btn-m5d78af" type="submit" value="确定">
+					<input class="g-btn g-btn-mdadada" data-dismiss="modal"
+						type="button" value="取消">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+<div id="menuItemTempl" style="display:none">
+	<div class="${editable?string('dd-handle','')} dd2-handle" style="font-weight: normal;">
+		<i class=" icon-reorder"></i>
+	</div>
+	<div class="dd2-content" style="font-weight: normal;">
+		<span class="menuName"></span>
+		<div class="pull-right action-buttons">
+			<#if editable > 
+				<a class="blue"  href="#" data-toggle="modal"
+					data-target="#menuDetailModal"> <i
+					class="icon-pencil bigger-130"></i>
+				</a> 
+				<a class="red delMenu" href="#" >
+					 <i class="icon-trash bigger-130"></i>
+				</a> 
+			<#else> 
+				<a class="green" tabindex="0" data-container="body"
+					role="button" data-toggle="popover" data-trigger="focus"
+					title="菜单详情">
+					 <i class="icon-eye-open bigger-130"></i>
+				</a> 
+			</#if>
+		</div>
+	</div>
+</div>
+
+<div id="menuDirTempl" style="display:none">
+		<div class="${editable?string('dd-handle','')} dd2-handle">
+        	<i class="iconfont icon-dashbord bigger-130" ></i>
+        </div>
+        <div class="dd2-content">
+        	<span class="menuName"></span>
+       		<div class="pull-right action-buttons">
+	        	<#if editable >
+	        		<a class="green menu_add"  href="#" data-toggle="modal"  data-target="#menuDetailModal">
+						<i class="icon-plus bigger-130"></i>
+					</a>
+					<a class="blue"  href="#" data-toggle="modal"  data-target="#menuDirModal" >
+						<i class="icon-pencil bigger-130"></i>
+					</a>
+					<a class="red delMenu" href="#">
+						<i class="icon-trash bigger-130"></i>
+					</a>
+				 </#if>
+			</div>
+  		 </div>
+</div>
+
+<script>
+	var dd = $('.dd');
+	var menuDetailContent=['<div class="row"><label class="control-label col-md-4">{label}:</label>',
+				'<div class="col-md-8"><p >{value}</p></div>',
+				'</div>'].join('');
+	function showMenuDetail(){
+		var li = $(this).closest("li");
+		var content = $("<div style='width:300px'></div>");
+		var isDir = (li.data("dir")=="true");
+		content.append(menuDetailContent.replace("{label}","菜单id").replace("{value}",li.data("id")));
+		content.append(menuDetailContent.replace("{label}","菜单名称").replace("{value}",li.data("name")));
+		content.append(menuDetailContent.replace("{label}","URL").replace("{value}",li.data("url")));
+		content.append(menuDetailContent.replace("{label}","默认菜单").replace("{value}",li.data("default")=="true"?"是":"否"));
+		var subFuncs = li.data("subFuncs");
+		if(subFuncs){
+			content.append(menuDetailContent.replace("{label}","子权限").replace("{value}",li.data("subFuncs")));		
+		}
+		return $("<div></div>").append(content).html();
+	}
+	var menuItemTempl = $("#menuItemTempl").html();
+	function renderMenuItem(li){
+		li.append(menuItemTempl);
+		li.find('.menuName').text(li.data('name'));
+	}
+	var menuDirTempl = $("#menuDirTempl").html();
+	function renderMenuDir(li){
+		li.prepend(menuDirTempl);
+		li.find('.menuName').text(li.data('name'));
+		var icon = li.data("icon");
+		if(icon==undefined || icon==""){
+			icon = 'icon-dashbord';
+		}
+		li.find('.dd2-handle i.iconfont').addClass(icon);
+	}
+	function checkMenuIdDup(value,validator,field){
+		if(field.prop('readonly')==false && dd.find("li[data-id='"+value+"']").length>0){
+			 return {
+		        valid: false,      
+		        message: '菜单ID已存在'
+		    }
+		}
+		if(value && value.indexOf("dir-")==0){
+			return {
+		        valid: false,      
+		        message: '不能以dir-开头'
+		    }
+		}
+		return true;
+	}
+	
+	$(function() {  
+		var maxDirId = 10000;
+		dd.find('li.dirMenu').each(function(i,li){
+			var id = $(li).data("id");
+			if(id && id.indexOf("dir-")==0){
+				var dirId = parseInt(id.replace("dir-",""));
+				if(dirId && dirId>maxDirId){
+					maxDirId = dirId;
+				}
+			}
+			renderMenuDir($(li));
+		});
+		dd.find('li.subMenu').each(function(i,li){
+			renderMenuItem($(li));
+		});
+		dd.nestable({maxDepth:2,fixDepth:true}); 
+	    $('[data-toggle="popover"]').popover({content:showMenuDetail,html:true})
+	    var menuDirModal = $('#menuDirModal');
+	    menuDirModal.on('show.bs.modal',function(e){
+	    	var t = $(e.relatedTarget);
+	    	var isAdd = t.hasClass("menu_dir_add");
+	    	if(isAdd){
+	    		menuDirModal.find('.modal-title').text('新增一级菜单');
+	    		menuDirModal.removeData('current');
+	    	}else{
+	    		var li = t.closest("li");
+	    		menuDirModal.find('form').fillData(li.data());
+	    		menuDirModal.find('.modal-title').text('编辑一级菜单');
+	    		menuDirModal.data('current',li.data('id'));
+	    	}
+	    })
+	    menuDirModal.find('form').on('form.ajax.success',function(e,result,formData,modal){
+	    	menuDirModal.modal('hide');
+	    	var currentId = menuDirModal.data('current');
+	    	if(currentId!=undefined){
+	    		var current = dd.find('li[data-id="'+currentId+'"]');
+	    		var oldIcon = current.data("icon");
+	    		current.data("name",formData.name);
+	    		current.data("icon",formData.icon);
+	    		current.children(".dd2-content").find('.menuName').text(formData.name);
+	    		var icondiv = current.find('.dd2-handle i.iconfont');
+	    		if(oldIcon!="" && oldIcon!=undefined){
+	    			icondiv.removeClass(oldIcon);
+	    		}
+	    		if(formData.icon!=""){
+	    			icondiv.addClass(formData.icon);
+	    		}
+	    	}else{
+	    		var li = $("<li class='dd-item dd2-item dirMenu ' ></li>");
+	    		maxDirId = maxDirId+1;
+	    		li.data("id","dir-"+maxDirId);
+	    		li.attr("data-id","dir-"+maxDirId);
+	    		li.data("name",formData.name);
+	    		li.data("icon",formData.icon);
+	    		li.data("dir","true");
+	    		renderMenuDir(li);
+	    		li.append('<ol class="dd-list"></ol>');
+	    		dd.children('ol.dd-list').append(li);
+	    	}
+	    });
+	    var menuDetailModal = $('#menuDetailModal');
+	    var menuIdInput = $('#menuIdInput');
+	    menuDetailModal.on('show.bs.modal',function(e){
+	    	var t = $(e.relatedTarget);
+	    	var li = t.closest("li");
+	    	var isAdd = t.hasClass("menu_add");
+	    	if(isAdd){
+	    		menuDetailModal.find('.modal-title').text('新增菜单到"'+li.data('name')+'"');
+	    		menuDetailModal.removeData('current');
+	    		menuDetailModal.data('parent',li.data('id'));
+	    		menuIdInput.prop("readonly",false);
+	    	}else{
+	    		var form = menuDetailModal.find('form');
+	    		form.fillData(li.data());
+	    		menuDetailModal.find('.modal-title').text('编辑菜单');
+	    		menuDetailModal.removeData('parent');
+	    		menuDetailModal.data('current',li.data('id'));
+	    		menuIdInput.prop("readonly",true);
+	    	}
+	    });
+	   
+	    menuDetailModal.find('form').on('form.ajax.success',function(e,result,formData,modal){
+	    	var parentId = menuDetailModal.data('parent');
+	    	menuDetailModal.modal('hide');
+	    	if(parentId!=undefined){
+	    		var parent = dd.find('li[data-id="'+parentId+'"]');
+	    		var li = $("<li class='dd-item dd2-item subMenu' ></li>");
+	    		li.data("id",formData.id);
+	    		li.attr("data-id",formData.id);
+	    		li.data("name",formData.name);
+	    		li.data("url",formData.url);
+	    		li.data("dir","false");
+	    		li.data("subFuncs",formData.subFuncs);
+	    		renderMenuItem(li);
+	    		parent.find('ol.dd-list').append(li);
+	    	}else{
+		    	var currentId = menuDetailModal.data('current');
+		    	if(currentId!=undefined){
+		    		var current = dd.find('li[data-id="'+currentId+'"]');
+		    		current.data("name",formData.name);
+		    		current.data("url",formData.url);
+		    		current.data("subFuncs",formData.subFuncs);
+		    		current.find('.menuName').text(formData.name);
+		    	}
+	    	}
+	    });
+	    
+	    var saveForm = $('#saveForm');
+	    var menuTree = $('#menuTree');
+	    saveForm.on('form.ajax.presend',function(){
+			var tree = {};
+			var ser = dd.nestable('serialize');
+			tree.menu={"default": false,"id": "0","enable": true,"dir": true,"visible": false};
+			tree.children=[];
+			$.each(ser,function(i,item){
+				var dir = {menu:{},children:[]};
+				$.each(item,function(key,val){
+					if(key!="children"){
+						dir.menu[key]=val;
+					}else{
+						$.each(val,function(i,sub){
+							var subFuncs = sub.subFuncs;
+							delete sub.subFuncs;
+							if(subFuncs!=undefined && subFuncs!=""){
+								var funcs = subFuncs.split(",");
+								var funcMap = {};
+								if(funcs!=undefined && funcs.length>0){
+									$.each(funcs,function(j,func){
+										var split = func.split(":");
+										funcMap[split[0]]=split[1];
+									});
+									sub.subFuncs = funcMap;
+								}
+							}
+							dir.children.push({menu:sub});
+						});
+					}
+				});
+				tree.children.push(dir);
+			});
+			menuTree.val(JSON.stringify(tree));
+		}).on('form.ajax.success',function(){
+			window.location="/preferences/e/module/menus?module=${module}";
+		});
+	    
+	    dd.on('click',".delMenu",function(){
+	    	var li = $(this).closest("li");
+	    	var isDir = li.data("dir");
+	    	var id = li.data("id");
+	    	var name = li.data("name");
+	    	if(isDir){
+	    		if(li.find("li.subMenu").length>0){
+	    			$.messager.alert("提示","该菜单下存在子菜单，请先删除子菜单。");
+	    		}else{
+	    			li.remove();
+	    			$.messager.popup("删除菜单["+name+"]成功");
+	    		}
+	    	}else{
+	    		$.get('/preferences/e/module/menus/ajax/checkMenu.ajax?module=${module}&menuId='+id,function(res){
+	    			if(res.status==200){
+	    				var data = res["data"];
+	    				if(data.used){
+	    					$.messager.alert("提示","该菜单正在被以下角色使用，请解除角色关联后再删除："+data.roleCodes.join(','));
+	    				}else{
+	    					li.remove();
+	    					$.messager.popup("删除菜单["+name+"]成功");
+	    				}
+	    			}
+	    		},"json");
+	    	}
+	    });
+	});  
+</script>

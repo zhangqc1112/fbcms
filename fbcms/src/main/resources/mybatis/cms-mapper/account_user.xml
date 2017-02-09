@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hbc.guide.biz.dao.AccountUserDao">
+
+   <sql id="tableColumns">
+       user_id, user_no, group_no, group_name, user_name, 
+       phone, email, status, update_time, create_time
+   </sql>
+
+   <insert id="insert" parameterType="AccountUser">
+       INSERT INTO account_user
+       (
+           <include refid="tableColumns" /> 
+       )
+       VALUES 
+       ( 
+           #{userId}, #{userNo}, #{groupNo}, #{groupName}, #{userName}, #{phone}, #{email}, #{status}, #{updateTime}, #{createTime}
+       )
+   </insert>
+
+   <update id="update" parameterType="AccountUser">
+       UPDATE account_user SET
+       user_id = #{userId}, user_no = #{userNo}, group_no = #{groupNo}, group_name = #{groupName}, user_name = #{userName}, phone = #{phone}, email = #{email}, status = #{status}, update_time = #{updateTime}, create_time = #{createTime}
+       WHERE  user_id = #{userId}
+   </update>
+
+   <delete id="deleteByUserId" parameterType="int" >
+       DELETE FROM account_user
+       WHERE  user_id = #{userId}
+   </delete>
+
+   <select id="getByUserId" parameterType="int"  resultType="AccountUser">
+        SELECT * FROM account_user
+        WHERE  user_id = #{userId}
+   </select>
+
+   <select id="count" parameterType="Integer"  resultType="Integer" >
+        SELECT  COUNT( DISTINCT(ID)) FROM account_user
+   </select>
+
+   <select id="pageQuery" resultType="AccountUser">
+       <![CDATA[   
+           SELECT * FROM (SELECT T1_.*, rownum ROWNUM_ FROM (
+       ]]>
+       SELECT
+           <include refid="tableColumns" />
+       FROM account_user
+           <![CDATA[  ) T1_ WHERE ROWNUM <= (#{pageNo} -1) * #{pageSize} + #{pageSize} ) WHERE ROWNUM_ >= (#{pageNo} -1) * #{pageSize} + 1 ]]>
+   </select>
+</mapper>

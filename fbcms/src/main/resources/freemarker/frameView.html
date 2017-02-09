@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title> FBWork</title>
+${resources}
+</head>
+<body class="${navFlag?string('gui-slowanimatebody','')}">
+    <div id="head-inc"></div>
+    <div class="gui-container">
+        <div class="gui-wrapper clearfix">
+            <#if module??>
+            <div class="gui-leftbar">
+                <div class="gui-logo">
+                    <a href="#" class="logo"><img src="${staticHost}/dashboard/img/common/icon_lg2.png" alt=""><span>${module.name!}</span></a>
+                </div>
+                <ul class="gui-nav">
+                    <#if menus?? >
+                    <#list menus.children  as node>
+                        <#assign dir=node.menu.dir />
+                        <#assign isCur=((curMenu??) && (curMenu.id==node.menu.id))/>
+                        <#assign isOpen=((nav??) && (nav?seq_contains(node.menu)))/>
+                        <li class="gui-navlev1 ${isCur?string('gui-acting-navli','')} ${isOpen?string('gui-action-nav','')}" >
+                            <a class="gui-navlev1-href" href="${dir?string('javascript:;',node.menu.url!)}">${node.menu.name}
+                            <span class="gui-navlev1-icon iconfont  ${node.menu.icon!'icon-dashbord'}"></span>
+                            <#if node.menu.tip?? >
+                                <i>${node.menu.tip}</i>
+                            </#if>
+                            </a>
+                            <#if dir>
+                                <ul class="gui-navlev2">
+                                <#list node.children  as subNode>
+                                    <#assign isSubCur=((curMenu??) && (curMenu.id==subNode.menu.id))/>
+                                    <li class="${isSubCur?string('gui-one-page-link','')}"><a  href="${subNode.menu.dir?string('javascript:;',subNode.menu.url!)}">${subNode.menu.name}</a></li>
+                                </#list>
+                                </ul>
+                            </#if>
+                        </li>
+                    </#list>
+                    </#if>
+                </ul>
+            </div>
+            </#if>
+
+            <div class="gui-content" >
+                <header>
+                    <div class="gui-headri">
+                        <div class="gui-rilebtns clearfix">
+                            <a id="j_ChangeNavBtn" href="javascript:;" class="gui-pagebtns g-icon icon-shrink "></a>
+                        </div>
+                        <div class="gui-rightmode clearfix">
+                            <div class="gui-workbtns dropdown">
+                                <div id="dLabel" class="gui-headri-sev1 dropbtn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <a class="gui-loadface" href="javascript:;">
+                                      ${loginName!}
+                                    </a>
+                                </div>
+                                <#if (modules??)&&(modules?size>0) >
+                                <ul class="gui-headri-sev2 dropdown-menu" role="menu"
+                                    aria-labelledby="dLabel">
+                                    <#list modules as m>
+                                        <li>
+                                            <a href="${m.indexUrl!'#'}">
+                                                <i class="gui-headri-math">
+                                                    <img	src="${m.logoUrl!'${staticHost}/dashboard/img/common/default_module_icon.png'}"	alt="" />
+                                                </i>
+                                                <span>${m.name!}</span>
+                                                </a>
+                                        </li>
+                                    </#list>
+                                </ul>
+                                </#if>
+                            </div>
+                            <div class="gui-workbtns">|</div>
+                            <div class="gui-workbtns">
+                                <a class="gui-headri-sev1" href="#" data-toggle="modal" data-target="#j_changePwdModal">修改密码</a>
+                            </div>
+                            <div class="gui-workbtns">|</div>
+                            <div class="gui-workbtns">
+                                <a class="gui-headri-sev1" href="${logoutHost!}">退出</a>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="gui-main">
+                    <ul class="breadcrumb gui-crumbs ">
+                        <#if (nav??)&&(nav?size>0) >
+                            <li><a href="/">首页</a></li>
+                            <#list nav as menuNode>
+                                <#if (menuNode??)&&(menuNode.menu.dir) >
+                                     <li class="dropdown" >
+                                         <a href="javascript:;" class="dropbtn" type="button" style="display: inline-block;"
+                                            data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="false">${menuNode.menu.name}<span class="caret"></span></a>
+                                         <ul class="dropdown-menu" role="menu"
+                                            aria-labelledby="dLabel">
+                                            <#list menuNode.children  as subNode>
+                                                    <li><a href="${subNode.menu.url!'javascript:;'}">${subNode.menu.name}</a> </li>
+                                            </#list>
+                                         </ul>
+                                     </li>
+                                <#else>
+                                    <li><a href="${menuNode.menu.url!'javascript:;'}">${menuNode.menu.name}</a></li>
+                                </#if>
+                            </#list>
+                            <#if pageName?? >
+                                <li><a href="javascript:;">${pageName}</a></li>
+                            </#if>
+                        </#if>
+                    </ul>
+                    <!--page start-->
+                    <div>  <!-- main content --> </div>
+                    <!--page end-->
+                    <div id="sub-page"></div>
+                </div>
+            </div>
+        </div>
+        <div class="gui-leftbg"></div>
+    </div>
+    <div id="foot-inc"></div>
+    <footer>
+        <div class="footercon">
+            <p>Copyright © FBWork</p>
+        </div>
+    </footer>
+
+    <div id="_frame_html_end" >
+                <script type="text/javascript"  >
+                    $(document).ready(function() {
+                        var foot = $("#foot-inc");
+                        var head = $("#head-inc");
+                        $("div.sso-head").each(function(i) {
+                            var block = $(this);
+                            block.appendTo(head);
+                        });
+                        $("div.sso-foot").each(function(i) {
+                            var block = $(this);
+                            block.appendTo(foot);
+                        });
+                        $("div.modal").each(function(i) {
+                            var block = $(this);
+                            block.appendTo($(document.body));
+                        });
+                    });
+                </script>
+    </div>
+
+
+    <div class="modal fade" id="j_changePwdModal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true" >
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" >修改密码</h4>
+                </div>
+                <form id="changePwdForm" class="form-horizontal auto-validate" action="${chgPwdHost!}" >
+                    <div class="modal-body ">
+                            <div class="form-group">
+                                <label class="control-label col-md-3 require">当前密码：</label>
+                                <div class="col-md-8">
+                                    <input id="j_oldPwd" name="pwd" class="form-control" type="password" data-fv-notempty  />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 require">新密码：</label>
+                                <div class="col-md-8">
+                                    <input id="j_newPwd" name="npwd" class="form-control"  type="password" data-fv-notempty  minlength="6" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 require">确认新密码：</label>
+                                <div class="col-md-8">
+                                    <input id="j_newPwdAgain" name="renpwd" class="form-control"  type="password"  data-fv-notempty
+                                        minlength="6"  data-fv-identical data-fv-identical-field="npwd" data-fv-identical-message="新密码输入不一致" />
+                                </div>
+                            </div>
+                    </div>
+                     <div class="modal-footer">
+                            <input  class="g-btn g-btn-m5d78af" type="submit" value="确定">
+                            <input id="cancelBtn" class="g-btn g-btn-mdadada" data-dismiss="modal" type="button" value="取消"  >
+                    </div>
+                </form>
+                <div id="j_changePwdSuc" class="changeend">
+                    <div class="changeendco clearfix">
+                        <div class="changeendleimgs"><img src="${staticHost}/dashboard/img/login/smile_icon.png" alt="" /></div>
+                        <div class="changeendrimsg">
+                            <p class="chanendti">密码修改成功！</p>
+                            <p class="chanendte"><span id="j_pwdCountBack"></span>秒后将跳转至登录页面&nbsp;&nbsp;<a  id="j_pwdRedirect" href="${loginHost!}">重新登录</a></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="j_subPage" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="subPage" aria-hidden="true" >
+        <div class="modal-dialog" style="width:1200px;min-width:1200px" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" ></h4>
+                </div>
+                <div class="modal-body ">
+                    <div id="j_subPage_content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

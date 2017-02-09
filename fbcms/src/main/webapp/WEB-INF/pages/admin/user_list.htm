@@ -1,0 +1,323 @@
+<div class="gui-block gui-bg-white">
+	<div class="pull-right">
+		<a class="g-btn g-btn-m52b17e"  href="#" data-toggle="modal" data-target="#userDetailModal">添加</a>
+	</div>
+	<div class="g-table-wraper">
+		<table id="table" class="auto-table" data-url="/preferences/e/account/ajax/users.ajax">
+			<thead>
+			<tr>
+				<th data-field="groupName">部门</th>
+				<th data-field="userNo">人员编号</th>
+				<th data-field="userName">姓名</th>
+				<th data-field="phone">联系电话</th>
+				<th data-field="email">邮箱</th>
+				<th data-field="loginName">登录名</th>
+				<th data-formatter="actionFormatter" data-events="actionEvents">操作</th>
+			</tr>
+			</thead>
+		</table>
+	</div>
+</div>
+
+<!-- 新增人员 -->
+<div class="modal fade" id="userDetailModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button id="add_dialog_close" type="button" class="close"
+						data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true"> &times; </span>
+				</button>
+				<h4 class="modal-title" >新增/修改人员</h4>
+			</div>
+			<form  class="form-horizontal h-form auto-validate" action="/preferences/e/account/ajax/save.ajax">
+				<input name="id"  type="text" class="hide"  >
+				<input name="level"  type="hidden"  class="hide"  >
+				<div class="modal-body contents clearfix">
+					<div class="form-group ">
+						<label class="control-label col-md-3 require">所属部门：</label>
+						<div class="col-md-8">
+							<select class="form-control auto-select" data-pg-url="/preferences/e/group/ajax/all.ajax"
+									data-pg-key="groupNo" data-pg-name="getGroupName" id="pIdSelect" data-fv-notempty
+									name="groupNo" >
+								<option value="">无</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group ">
+						<label class="control-label col-md-3 require">姓名：</label>
+						<div class="col-md-8">
+							<input name="userName"  placeholder="长度限制10个字符" class="form-control"  data-fv-notempty >
+						</div>
+					</div>
+					<div class="form-group ">
+						<label class="control-label col-md-3 require">联系电话：</label>
+						<div class="col-md-8">
+							<input name="phone"   class="form-control"  data-fv-notempty >
+						</div>
+					</div>
+					<div class="form-group ">
+						<label class="control-label col-md-3 require">邮箱：</label>
+						<div class="col-md-8">
+							<input name="email" class="form-control"  data-fv-notempty  data-fv-emailAddress >
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-md-3 require">角色：</label>
+						<div class="col-md-8">
+							<div class="checkbox-inline checkbox" style="padding-left:15px">
+							<#list roleList as role>
+								<label><input type="checkbox" id="checkbox_${role.roleCode}" name="roleCodes" data-fv-notempty value="${role.roleCode}"/>${role.roleName!}</label>
+							</#list>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input name="userId" type="hidden">
+					<input class="g-btn g-btn-m5d78af" type="submit" value="确定">
+					<input class="g-btn g-btn-mdadada" data-dismiss="modal"  type="button" value="取消">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="j_add_account_dialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button id="add_dialog_close_reset" type="button" class="close"
+						data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true"> &times; </span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">账户设置</h4>
+			</div>
+			<div class="alert alert-info" role="alert">账户重置后生成账号，默认密码hbc123456</div>
+			<div class="modal-body">
+				<ul>
+
+					<input type="hidden" id="j_add_id" name="addId">
+					<li class="g-inputcon g-dottodbobor"><span
+							class="g-inputname"> <i> * </i> 登录名
+							</span>
+						<div>
+							<input id="id_account_reset_userid" name="name_account_reset_userid" type="hidden"></input>
+							<input id="id_account_reset_input" name="name_account_reset_input" placeholder="长度限制10个字符" class="g-input g-large-input g-verity-input" type="text" />
+							<button class="g-btn g-btn-mdc4e44" id="id_account_reset_btn"
+									name="name_account_btn" onclick="resetAct()">账号修改</button>
+						</div>
+						<p data-tips="" class="g-errmsg"></p></li>
+
+					<li class="g-inputcon g-dottodbobor"><span
+							class="g-inputname"> <i> * </i> 密码
+							</span>
+						<div>
+							<input id="id_password_reset_userid" name="name_password_reset_userid" type="hidden"></input>
+							<input
+									id="id_password_input" name="name_password_input"
+									placeholder="长度限制10个字符"
+									class="g-input g-large-input g-verity-input" type="password" />
+							<button id="id_password_btn" name="name_password_btn"
+									class="g-btn g-btn-mdc4e44" name="btn_add_group" onclick="resetPwd()">密码重置</button>
+						</div>
+						<p data-tips="" class="g-errmsg"></p></li>
+
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	function actionFormatter(value, row, index) {
+		if(row.status == 1){
+			return [
+				'<a href="#" data-toggle="modal" data-target="#userDetailModal" class="editBtn g-btn g-btn-m5d78af" >编辑</a>',
+				'<a href="#" data-toggle="modal" data-target="#j_add_account_dialog" class="accountSetBtn g-btn g-btn-m5d78af" >账户设置</a>',
+				'<a href="#" class="stopBtn g-btn g-btn-m5d78af" >禁用</a>'
+			].join('');
+		}else{
+			return [
+				'<a href="#" class="startBtn g-btn g-btn-m5d78af" >启用</a>',
+				'<a href="#" class="deleteBtn g-btn g-btn-m5d78af" >删除</a>'
+			].join('');
+		}
+	}
+
+	$(function(){
+		var table=$("#table");
+		var userDetailModal = $('#userDetailModal');
+		userDetailModal.find("form").on("form.ajax.success",function(){
+			table.bootstrapTable("refresh");
+			userDetailModal.modal("hide");
+		});
+		window.actionEvents = {
+			'click .editBtn':function(e,value,row,index){
+				userDetailModal.find('form').fillData(row);
+				update(row.userId);
+			},
+			'click .accountSetBtn':function(e,value,row,index){
+				var loginName = row.loginName;
+				if(loginName == undefined){
+					loginName = "";
+				}
+				goAccountSet(row.userId,loginName);
+			},
+			'click .stopBtn':function(e,value,row,index){
+				upStatus(row.userId,0);
+			},
+			'click .startBtn':function(e,value,row,index){
+				upStatus(row.userId,1);
+			},
+            'click .deleteBtn':function(e,value,row,index){
+                $.messager.confirm("确认","确定要删除用户["+row.userName+"]吗？",function(){
+                    $.get('/preferences/e/account/ajax/delete.ajax?userId='+row.userId,function(res){
+                        if(res.status==200){
+                            $.messager.popup("删除用户["+row.userName+"]成功");
+                            table.bootstrapTable("refresh");
+                        }
+                    },"json");
+                });
+
+            }
+		}
+
+	})
+
+	function update(userId){
+		$.ajax({
+			cache : true,
+			type : "GET",
+			url : "/preferences/e/account/ajax/users/detail.ajax?userId="+userId,
+			dataType : "json",
+			async : false,
+			error : function(request) {
+				alert("connection error");
+			},
+			success : function(data) {
+				if (data.status == 200) {
+					console.log(data);
+					var role_codes = data.data.roleCodes;
+					if(role_codes){
+						for(var i = 0;i<role_codes.length;i++){
+							var check = document.getElementById('checkbox_'+role_codes[i]);
+							check.checked=true;
+						}
+					}
+				} else {
+					alert(data);
+				}
+			}
+		});
+	}
+
+	function upStatus(userId,status){
+		$.ajax({
+			type : "POST",
+			url : "/preferences/e/account/ajax/status.ajax?userId=" + userId+"&status="+status,
+			dataType : 'json',
+			async : false,
+			error : function(request) {
+				alert("connection error");
+			},
+			success : function(data) {
+				if(data.status == 200){
+					$.messager.popup("操作成功！");
+					$("#table").bootstrapTable("refresh");
+				}else{
+					alert(data.message);
+				}
+			}
+		});
+	}
+
+	function resetAct(){
+
+		var userId = $('#id_account_reset_userid').val();
+		var account = $('#id_account_reset_input').val();
+
+		var param = '';
+		if (userId) {
+			param = param + '&userId=' + userId;
+		}
+		if (account) {
+			param = param + '&loginName=' + account;
+		}else{
+			alert('登录名不允许为空!');
+			return;
+		}
+
+		$.ajax({
+			type : "POST",
+			url : "/preferences/e/account/ajax/resetAct.ajax?"+param,
+			dataType : 'json',
+			async : false,
+			error : function(request) {
+				alert("connection error");
+			},
+			success : function(data) {
+				if(data.status == 200){
+					$("#add_dialog_close_reset").click();
+					$.messager.popup("操作成功！");
+					$("#table").bootstrapTable("refresh");
+				}else{
+					alert(data);
+				}
+			}
+		});
+	}
+
+	function resetPwd(){
+
+		var userId = $('#id_password_reset_userid').val();
+		var pwd = $('#id_password_input').val();
+
+		var param = '';
+		if (userId) {
+			param = param + '&userId=' + userId;
+		}
+		if (pwd) {
+			param = param + '&password=' + pwd;
+		}
+
+		$.ajax({
+			type : "POST",
+			url : "/preferences/e/account/ajax/resetPwd.ajax?" + param,
+			async : false,
+			dataType : 'json',
+			error : function(request) {
+				alert("connection error");
+			},
+			success : function(data) {
+				if(data.status == 200){
+					$("#add_dialog_close_reset").click();
+					$.messager.popup("操作成功！");
+					$("#table").bootstrapTable("refresh");
+				}else{
+					alert(data);
+				}
+			}
+		});
+	}
+
+	function goAccountSet(id,loginName) {
+		$('#id_password_reset_userid').val(id);
+		$('#id_account_reset_userid').val(id);
+		$('#id_account_reset_input').val(loginName);
+	}
+
+	function trim(t){
+		return (t||"").replace(/^\s+|\s+$/g, "");
+	}
+
+	function getGroupName(item){
+		return item.groupNo +  ": " + item.groupName;
+	}
+
+</script>
+
+
+
+
+
+

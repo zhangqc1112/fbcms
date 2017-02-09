@@ -1,0 +1,4 @@
+var $$env = {
+	"uploadHost":"",
+	"downloadHost":""
+}   

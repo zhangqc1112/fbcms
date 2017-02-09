@@ -1,0 +1,142 @@
+<div class="gui-block gui-bg-white">
+	<div class="pull-right">
+		<a class="g-btn g-btn-m52b17e"  href="#" data-toggle="modal" data-target="#groupDetailModal">添加</a>
+	</div>
+	<div class="g-table-wraper">
+		<table id="table" class="auto-table" data-url="/preferences/e/group/ajax/list.ajax">
+			<thead>
+				<tr>
+					<th data-field="level">级次</th>
+					<th data-field="groupNo">部门编号</th>
+					<th data-field="groupName">部门名称</th>
+					<th data-field="note">部门描述</th>
+					<th data-field="leader">负责人</th>
+					<th data-field="contactPhone">联系电话</th>
+					<th data-field="email">邮箱</th>
+					<th data-formatter="actionFormatter" data-events="actionEvents">操作</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</div>
+
+<!-- 新增组织-->
+<div class="modal fade" id="groupDetailModal" tabindex="-1" role="dialog"
+	aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button id="add_dialog_close" type="button" class="close"
+					data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true"> &times; </span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">新增/修改部门</h4>
+			</div>
+			<form  class="form-horizontal h-form auto-validate" action="/preferences/e/group/ajax/save.ajax">
+				<input name="id"  type="text" class="hide"  >
+				<input name="level"  type="hidden"  class="hide"  >
+				<div class="modal-body contents clearfix">
+					<div class="form-group ">
+						<label class="control-label col-md-3 require">所属部门：</label>
+						<div class="col-md-9">
+							<select class="form-control auto-select" data-pg-url="/preferences/e/group/ajax/all.ajax"
+								data-pg-key="id" data-pg-name="getGroupName" id="pIdSelect"
+								name="pId" >
+								<option value="">无</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group " id="groupNoDiv" >
+						<label class="control-label col-md-3 require">部门编号：</label>
+						<div class="col-md-9">
+							<input name="groupNo"  class="form-control"  readonly >
+						</div>
+					</div>
+					<div class="form-group ">
+						<label class="control-label col-md-3 require">部门名称：</label>
+						<div class="col-md-9">
+							<input name="groupName"  placeholder="长度限制15个字符" class="form-control"  data-fv-notempty >
+						</div>
+					</div>
+					<div class="form-group ">
+						<label class="control-label col-md-3 require">负责人：</label>
+						<div class="col-md-9">
+							<input name="leader"  placeholder="长度限制10个字符" class="form-control"  data-fv-notempty >
+						</div>
+					</div>	
+					<div class="form-group ">
+						<label class="control-label col-md-3 require">联系电话：</label>
+						<div class="col-md-9">
+							<input name="contactPhone"   class="form-control"  data-fv-notempty >
+						</div>
+					</div>	
+					<div class="form-group ">
+						<label class="control-label col-md-3 require">邮箱：</label>
+						<div class="col-md-9">
+							<input name="email"   class="form-control"  data-fv-notempty  data-fv-emailAddress >
+						</div>
+					</div>	
+					<div class="form-group">
+						<label class="control-label col-md-3">部门描述：</label>
+						<div class="col-md-9">
+							<textarea name="note" class="form-control" rows="4" ></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input class="g-btn g-btn-m5d78af" type="submit" value="确定">
+					<input class="g-btn g-btn-mdadada" data-dismiss="modal"
+						type="button" value="取消">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function getGroupName(item){
+	return item.groupName+" （"+item.groupNo+"）";
+}
+
+function actionFormatter(value, row, index) {
+	return [
+	    '<a href="#" data-toggle="modal" data-target="#groupDetailModal" class="groupDetailBtn g-btn g-btn-m5d78af" >编辑</a>',
+        '<a href="#"  class="groupDelBtn g-btn g-btn-m5d78af" >删除</a>' 
+    ].join('');
+}
+
+$(function(){
+	var table=$("#table");
+	var groupDetailModal = $('#groupDetailModal');
+	groupDetailModal.find("form").on("form.ajax.success",function(){
+		table.bootstrapTable("refresh");
+		groupDetailModal.modal("hide");
+	});
+	window.actionEvents = {
+			'click .groupDetailBtn':function(e,value,row,index){
+				groupDetailModal.find('form').fillData(row);
+				groupDetailModal.find('#pIdSelect').prop("disabled",true);
+				groupDetailModal.find('#groupNoDiv').show();
+
+			},
+			'click .groupDelBtn':function(e,value,row,index){
+				$.messager.confirm("确认","确定要删除部门["+row.groupName+"]吗？",function(){
+					$.get('/preferences/e/group/ajax/del.ajax?id='+row.id,function(res){
+		    			if(res.status==200){
+		    				$.messager.popup("删除部门["+row.groupName+"]成功");
+	    					table.bootstrapTable("refresh");
+		    			}
+		    		},"json");
+				});
+			}
+	}
+
+})
+
+</script>
+
+
+
+
+
+

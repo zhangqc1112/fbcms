@@ -1,0 +1,71 @@
+<#macro ui value=uiList >
+<table cellpadding="5" class="frmData">
+<#list value as v>
+<tr>
+	<td><#if v.required?default(false)><font color="red">*</font></#if>${v.text!}:</td>
+	<td>
+		<#switch v.ui >
+		<#case "text">
+			<input class="textbox <#if v.required?default(false)>easyui-validatebox</#if>" <#if v.required?default(false)>data-options="required:true"</#if> name="${v.name!}" value="${v.value!}" style="width: 150px" ></input>
+		<#break>
+		<#case "numberspinner">
+			<input class="easyui-numberspinner <#if v.required?default(false)>easyui-validatebox</#if>" <#if v.required?default(false)>data-options="required:true"</#if> name="${v.name!}" value="${v.value!}" style="width: 150px" ></input>
+		<#break>
+		<#case "combo">
+			<select class="easyui-combobox <#if v.required?default(false)>easyui-validatebox</#if>" name="${v.name!}" style="width: 150px" >
+				<#list v.options as option>
+					<option value="${option.value}" >${option.label}</option>
+				</#list>
+			</select>
+		<#break>
+		<#case "textarea">
+			<textarea  style="width: 300px;height:100px"  class="<#if v.required?default(false)>easyui-validatebox</#if>" name="${v.name!}"></textarea>
+		<#break>
+		</#switch>
+	</td>
+</tr>
+</#list>
+</table>
+</#macro>
+
+<#macro resultList data=data showresult=cmmap >
+<table class="easyui-datagrid" fit="true" data-options="singleSelect:true,collapsible:true">
+	<thead>
+		<tr>
+		<#list showresult?keys as mykey>
+		<th data-options="field:'${mykey}'">${showresult[mykey]!}</th>
+		</#list>
+		</tr>
+	</thead>
+	<tbody>
+		<#list data as row>
+		<tr>
+			<#list showresult?keys as mykey>
+			<td>${row[mykey]!}</td>
+			</#list>
+		</tr>
+		</#list>
+	</tbody>
+</table>
+</#macro>
+
+<#macro resultObject data=data showresult=cmmap >
+<table class="easyui-datagrid" fit="true" data-options="singleSelect:true,collapsible:true">
+	<thead>
+		<tr>
+		<th data-options="field:'1'">属性名称</th>
+		<th data-options="field:'2'">属性key</th>
+		<th data-options="field:'3'">属性值</th>
+		</tr>
+	</thead>
+	<tbody>
+		<#list showresult?keys as mykey>
+		<tr>
+		<td>${showresult[mykey]}</td>
+		<td>${mykey}</td>
+		<td>${data[mykey]!}</td>
+		</tr>
+		</#list>
+	</tbody>
+</table>
+</#macro>
